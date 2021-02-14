@@ -2,4 +2,4 @@
 
 Spice up you machine learning projects!
 
-![](images/tintml-screenshot-1.png?raw=true)
+![](https://github.com/verrannt/tintml/raw/main/images/tintml-screenshot-1.png)
