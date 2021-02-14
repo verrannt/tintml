@@ -1,2 +1,3 @@
-# tintml
-Spice up you machine learning projects
+# TintML
+
+Spice up you machine learning projects!
