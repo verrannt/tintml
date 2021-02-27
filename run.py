@@ -1,5 +1,7 @@
 # Import before TF to disable TF outputs
-import beautifulml as bml
+from tintml import Tint
+
+import os
 
 # Import TF related stuff
 import tensorflow as tf
@@ -10,22 +12,29 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense, Flatten, Conv2D
 from tensorflow.keras import Model
 
-with console.status()
+tint = Tint()
 
-mnist = tf.keras.datasets.mnist
+tint.scope('Preparing Data')
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, x_test = x_train / 255.0, x_test / 255.0
+with tint.status('Processing'):
+    mnist = tf.keras.datasets.mnist
 
-# Add a channels dimension
-x_train = x_train[..., tf.newaxis].astype("float32")
-x_test = x_test[..., tf.newaxis].astype("float32")
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    x_train, x_test = x_train / 255.0, x_test / 255.0
 
-train_ds = tf.data.Dataset.from_tensor_slices(
-    (x_train, y_train)).shuffle(10000).batch(32)
+    # Add a channels dimension
+    x_train = x_train[..., tf.newaxis].astype("float32")
+    x_test = x_test[..., tf.newaxis].astype("float32")
 
-test_ds = tf.data.Dataset.from_tensor_slices(
-    (x_test, y_test)).batch(32)
+    train_ds = tf.data.Dataset.from_tensor_slices(
+        (x_train, y_train)).shuffle(10000).batch(32)
+
+    test_ds = tf.data.Dataset.from_tensor_slices(
+        (x_test, y_test)).batch(32)
+
+    tint.log('Successfully loaded data')
+
+tint.scope('Model Setup')
 
 class MyModel(Model):
     def __init__(self):
@@ -41,19 +50,23 @@ class MyModel(Model):
         x = self.d1(x)
         return self.d2(x)
 
-# Create an instance of the model
-model = MyModel()
+with tint.status('Initialization'):
+    # Create an instance of the model
+    model = MyModel()
+    tint.log('Model initialized')
 
-loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    tint.log('Log function initialized')
 
-optimizer = tf.keras.optimizers.Adam()
+    optimizer = tf.keras.optimizers.Adam()
+    tint.log('Optimizer initialized')
 
-train_loss = tf.keras.metrics.Mean(name='train_loss')
-train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
+    train_loss = tf.keras.metrics.Mean(name='train_loss')
+    train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
 
-test_loss = tf.keras.metrics.Mean(name='test_loss')
-test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
-
+    test_loss = tf.keras.metrics.Mean(name='test_loss')
+    test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
+    tint.log('Metrics initialized')
 
 @tf.function
 def train_step(images, labels):
@@ -68,7 +81,6 @@ def train_step(images, labels):
     train_loss(loss)
     train_accuracy(labels, predictions)
 
-
 @tf.function
 def test_step(images, labels):
     # training=False is only needed if there are layers with different
@@ -79,6 +91,7 @@ def test_step(images, labels):
     test_loss(t_loss)
     test_accuracy(labels, predictions)
 
+tint.scope('Training')
 
 EPOCHS = 5
 
@@ -92,13 +105,13 @@ for epoch in range(EPOCHS):
     test_loss.reset_states()
     test_accuracy.reset_states()
 
-    for images, labels in bml.iter(train_ds, "Training"):
+    for images, labels in tint.iter(train_ds, "Training"):
         train_step(images, labels)
 
-    for test_images, test_labels in bml.iter(test_ds, "Testing"):
+    for test_images, test_labels in tint.iter(test_ds, "Testing"):
         test_step(test_images, test_labels)
 
-    tint.metrics.print({
+    tint.print_metrics({
             'Train Loss': train_loss.result(),
             'Train Accuracy': train_accuracy.result(),
             'Test Loss': test_loss.result(),
