@@ -10,7 +10,7 @@ tint = Tint()
 
 n_datapoints = 100
 n_valpoints = 10
-n_epochs = 3
+n_epochs = 4
 
 
 ## LOAD DATA ##
@@ -23,6 +23,17 @@ with tint.status("Initialization"):
     sleep(0.28)
     tint.log("Finished initialization")
 
+
+## SET UP MODEL ##
+
+tint.scope('Model Setup')
+
+with tint.status("Setup Model"):
+    sleep(1.7)
+    tint.log("Defined model graph")
+    sleep(1.2)
+    tint.log("Loaded model weights")
+
 ## TRAINING ##
 
 tint.scope("Training")
@@ -30,89 +41,62 @@ sleep(0.3)
 prev_val_error = 1.
 prev_train_error = 1.
 
-tint.track("Train Loss")
-
 for epoch_idx in range(1,n_epochs+1):
 
     tint.print(f"Epoch {epoch_idx}/{n_epochs}")
 
+    # Train
+
     for i in tint.iter(range(n_datapoints), "Training..."):
         sleep(0.012)
     
-    tint.
-
     train_error = prev_train_error * 0.9 + np.random.normal(0,0.1)
-    if train_error == prev_train_error or epoch_idx==1:
-        color = "white"
-        arrow = ""
-    elif train_error < prev_train_error:
-        color = "green"
-        arrow = ":arrow_lower_right:"
-    else:
-        color = "red"
-        arrow = ":arrow_upper_right:"
-    console.print(f"train_loss:\t[{color}]{train_error:.3f} {arrow}[/{color}]")
     prev_train_error = train_error
     
-    progress = Progress(
-        "[progress.description]{task.description}",
-        "{task.completed}/{task.total}",
-        "[progress.percentage]{task.percentage:>3.0f}%",
-        TimeRemainingColumn(),
-        transient=True,
-    )
-    
-    with progress:
-        val_task = progress.add_task(f"[cyan]Validating...", total=n_valpoints)
+    # Val
 
-        for i in range(n_valpoints):
-            progress.advance(val_task)
-            sleep(0.2)
+    for i in tint.iter(range(n_valpoints), "Validating..."):
+        sleep(0.05)
 
     val_error = prev_val_error * 0.9 + np.random.normal(0,0.1)
-    if val_error == prev_val_error or epoch_idx==1:
-        color = "white"
-        arrow = ""
-    elif val_error < prev_val_error:
-        color = "green"
-        arrow = ":arrow_lower_right:"
-    else:
-        color = "red"
-        arrow = ":arrow_upper_right:"
-    console.print(f"val_loss:\t[{color}]{val_error:.3f} {arrow}[/{color}]")
     prev_val_error = val_error
+    
+    # Metrics
 
-console.log("Finished training")
+    tint.print_metrics({
+        'Train loss': train_error,
+        'Val loss': val_error,
+    }, [True, True], multi_line=True)
+
+tint.log("Finished training")
 
 
 ## TESTING ##
 
-console.print("\n~~ Testing ~~", style="bold yellow")
+tint.scope("Testing")
 
-with console.status("[green] Setting up testing") as status:
+with tint.status("Setting up testing"):
     sleep(1)
-    console.log("Read test data")
-    sleep(0.5)
-    console.log("Applied data augmentations")
+    tint.log("Read test data")
+    sleep(1.7)
 
-console.log("Testing model on unseen data...")
+tint.log("Started testing procedure")
 
-progress = Progress(
-    "[progress.description]{task.description}",
-    "{task.completed}/{task.total}",
-    BarColumn(),
-    "[progress.percentage]{task.percentage:>3.0f}%",
-    TimeRemainingColumn(),
-    transient=True,
-)
-
-with progress:
-
-    test_task = progress.add_task(f"[cyan]Predicting...  ", total=n_datapoints)
-
-    for i in range(n_datapoints):
-        progress.advance(test_task)
-        sleep(0.012)
+for i in tint.iter(range(n_datapoints), "Testing"):
+    sleep(0.012)
 
 test_error = prev_val_error + np.random.normal(0,0.1)
-console.print(f"test_loss:\t[{color}]{test_error:.3f}[/{color}]")
+tint.print_metrics({
+    'Test loss': test_error
+}, [True])
+
+
+## SAVING ##
+
+tint.scope('Saving')
+
+with tint.status("Saving run"):
+    sleep(2)
+    tint.log("Saved model weights.")
+    sleep(0.8)
+    tint.log("Saved metrics.")
