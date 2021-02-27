@@ -1,120 +1,102 @@
-# Import before TF to disable TF outputs
+from time import sleep
+from rich.console import Console
+from rich.progress import track, Progress, BarColumn, TimeRemainingColumn
+
+import numpy as np
+
 from tintml import Tint
-
-import os
-
-# Import TF related stuff
-import tensorflow as tf
-#tf.get_logger().setLevel('ERROR')
-# Can also be set using the AUTOGRAPH_VERBOSITY environment variable
-#tf.autograph.set_verbosity(3)
-
-from tensorflow.keras.layers import Dense, Flatten, Conv2D
-from tensorflow.keras import Model
 
 tint = Tint()
 
-tint.scope('Preparing Data')
+n_datapoints = 100
+n_valpoints = 10
+n_epochs = 4
 
-with tint.status('Processing'):
-    mnist = tf.keras.datasets.mnist
 
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    x_train, x_test = x_train / 255.0, x_test / 255.0
+## LOAD DATA ##
 
-    # Add a channels dimension
-    x_train = x_train[..., tf.newaxis].astype("float32")
-    x_test = x_test[..., tf.newaxis].astype("float32")
+with tint.status("Initialization"):
+    sleep(0.17)
+    tint.log("Read command line arguments")
+    sleep(0.12)
+    tint.log("Set paths")
+    sleep(0.28)
+    tint.log("Finished initialization")
 
-    train_ds = tf.data.Dataset.from_tensor_slices(
-        (x_train, y_train)).shuffle(10000).batch(32)
 
-    test_ds = tf.data.Dataset.from_tensor_slices(
-        (x_test, y_test)).batch(32)
-
-    tint.log('Successfully loaded data')
+## SET UP MODEL ##
 
 tint.scope('Model Setup')
 
-class MyModel(Model):
-    def __init__(self):
-        super(MyModel, self).__init__()
-        self.conv1 = Conv2D(12, 3, activation='relu')
-        self.flatten = Flatten()
-        self.d1 = Dense(40, activation='relu')
-        self.d2 = Dense(10)
+with tint.status("Setup Model"):
+    sleep(1.7)
+    tint.log("Defined model graph")
+    sleep(1.2)
+    tint.log("Loaded model weights")
 
-    def call(self, x):
-        x = self.conv1(x)
-        x = self.flatten(x)
-        x = self.d1(x)
-        return self.d2(x)
+## TRAINING ##
 
-with tint.status('Initialization'):
-    # Create an instance of the model
-    model = MyModel()
-    tint.log('Model initialized')
+tint.scope("Training")
+sleep(0.3)
+prev_val_error = 1.
+prev_train_error = 1.
 
-    loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-    tint.log('Log function initialized')
+for epoch_idx in range(1,n_epochs+1):
 
-    optimizer = tf.keras.optimizers.Adam()
-    tint.log('Optimizer initialized')
+    tint.print(f"Epoch {epoch_idx}/{n_epochs}")
 
-    train_loss = tf.keras.metrics.Mean(name='train_loss')
-    train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
+    # Train
 
-    test_loss = tf.keras.metrics.Mean(name='test_loss')
-    test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
-    tint.log('Metrics initialized')
+    for i in tint.iter(range(n_datapoints), "Training..."):
+        sleep(0.012)
+    
+    train_error = prev_train_error * 0.9 + np.random.normal(0,0.1)
+    prev_train_error = train_error
+    
+    # Val
 
-@tf.function
-def train_step(images, labels):
-    with tf.GradientTape() as tape:
-        # training=True is only needed if there are layers with different
-        # behavior during training versus inference (e.g. Dropout).
-        predictions = model(images, training=True)
-        loss = loss_object(labels, predictions)
-    gradients = tape.gradient(loss, model.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    for i in tint.iter(range(n_valpoints), "Validating..."):
+        sleep(0.05)
 
-    train_loss(loss)
-    train_accuracy(labels, predictions)
-
-@tf.function
-def test_step(images, labels):
-    # training=False is only needed if there are layers with different
-    # behavior during training versus inference (e.g. Dropout).
-    predictions = model(images, training=False)
-    t_loss = loss_object(labels, predictions)
-
-    test_loss(t_loss)
-    test_accuracy(labels, predictions)
-
-tint.scope('Training')
-
-EPOCHS = 5
-
-for epoch in range(EPOCHS):
-
-    tint.print("Epoch {}/{}".format(epoch+1, EPOCHS))
-
-    # Reset the metrics at the start of the next epoch
-    train_loss.reset_states()
-    train_accuracy.reset_states()
-    test_loss.reset_states()
-    test_accuracy.reset_states()
-
-    for images, labels in tint.iter(train_ds, "Training"):
-        train_step(images, labels)
-
-    for test_images, test_labels in tint.iter(test_ds, "Testing"):
-        test_step(test_images, test_labels)
+    val_error = prev_val_error * 0.9 + np.random.normal(0,0.1)
+    prev_val_error = val_error
+    
+    # Metrics
 
     tint.print_metrics({
-            'Train Loss': train_loss.result(),
-            'Train Accuracy': train_accuracy.result(),
-            'Test Loss': test_loss.result(),
-            'Test Accuracy': test_accuracy.result()},
-        down_is_better=[True, False, True, False],
-    )
+        'Train loss': train_error,
+        'Val loss': val_error,
+    }, [True, True], multi_line=True)
+
+tint.log("Finished training")
+
+
+## TESTING ##
+
+tint.scope("Testing")
+
+with tint.status("Setting up testing"):
+    sleep(1)
+    tint.log("Read test data")
+    sleep(1.7)
+
+tint.log("Started testing procedure")
+
+for i in tint.iter(range(n_datapoints), "Testing"):
+    sleep(0.012)
+
+test_error = prev_val_error + np.random.normal(0,0.1)
+tint.print_metrics({
+    'Test loss': test_error
+}, [True])
+
+
+## SAVING ##
+
+tint.scope('Saving')
+
+with tint.status("Saving run"):
+    sleep(2)
+    tint.log("Saved model weights.")
+    sleep(0.8)
+    tint.log("Saved metrics.")
