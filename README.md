@@ -98,7 +98,7 @@ for i in tint.iter(range(n_datapoints), 'Training...'):
 
 ## Example
 
-See the provided `example_run.py` script for an artificial ML training script to highlight the usage of Tint. It does not compute anything and just sleeps a while at each execution step, but may act as inspiration for how to incorporate Tint into your project. You can run it with `python example_run.py` to see Tint in action.
+See the provided `example.py` script for an artificial ML training script to highlight the usage of Tint. It does not compute anything and just sleeps a while at each execution step, but may act as inspiration for how to incorporate Tint into your project. You can run it with `python example_run.py` to see Tint in action.
 
 ## Tensorflow Specifics
 
