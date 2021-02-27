@@ -26,7 +26,7 @@ with tint.status("Initialization"):
 
 ## SET UP MODEL ##
 
-tint.scope('Model Setup')
+tint.printh('Model Setup')
 
 with tint.status("Setup Model"):
     sleep(1.7)
@@ -36,7 +36,7 @@ with tint.status("Setup Model"):
 
 ## TRAINING ##
 
-tint.scope("Training")
+tint.printh("Training")
 sleep(0.3)
 prev_val_error = 1.
 prev_train_error = 1.
@@ -73,7 +73,7 @@ tint.log("Finished training")
 
 ## TESTING ##
 
-tint.scope("Testing")
+tint.printh("Testing")
 
 with tint.status("Setting up testing"):
     sleep(1)
@@ -93,7 +93,7 @@ tint.print_metrics({
 
 ## SAVING ##
 
-tint.scope('Saving')
+tint.printh('Saving')
 
 with tint.status("Saving run"):
     sleep(2)

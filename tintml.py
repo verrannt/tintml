@@ -9,7 +9,7 @@ class Tint():
 
     def __init__(self):
         self.console = Console()
-        self.current_scope = None
+        #self.current_scope = None
         self.metric_dict = dict()
         self.longest_metric = 0
         self.log = self.console.log
@@ -17,8 +17,8 @@ class Tint():
     def print(self, something, end='\n'):
         self.console.print(something, end=end)
 
-    def scope(self, title:str):
-        self.current_scope = title
+    def printh(self, title:str):
+        #self.current_scope = title
         self.console.print("\n{}".format(title), style='bold yellow')
 
     def status(self, title:str):
@@ -27,7 +27,7 @@ class Tint():
     #def log(self, message:str):
     #    return self.console.log(message)
 
-    def print_metrics(self, metric_dict, down_is_better, multi_line=False):
+    def print_metrics(self, metric_dict, low_is_better, multi_line=False):
 
         for i, k in enumerate(metric_dict.keys()):
             
@@ -42,14 +42,14 @@ class Tint():
                 arrow = " "
             
             # Metric has improved compared to previous value
-            elif self.compare(metric_dict[k], self.metric_dict[k], down_is_better[i]):
+            elif self.compare(metric_dict[k], self.metric_dict[k], low_is_better[i]):
                 color = "green"
-                arrow = self.get_arrow(True, down_is_better[i])
+                arrow = self.get_arrow(True, low_is_better[i])
             
             # Metric has worsened compared to previous value
             else:
                 color = "red"
-                arrow = self.get_arrow(False, down_is_better[i])
+                arrow = self.get_arrow(False, low_is_better[i])
             
             n_blanks = " " * (self.longest_metric + 1 - len(k))
 
@@ -67,17 +67,17 @@ class Tint():
     def get_metrics(self):
         return self.metric_dict
 
-    def compare(self, val1, val2, down_is_better):
-        if down_is_better:
+    def compare(self, val1, val2, low_is_better):
+        if low_is_better:
             return val1 < val2
         else: 
             return val1 > val2
 
-    def get_arrow(self, improvement:bool, down_is_better:bool):
+    def get_arrow(self, improvement:bool, low_is_better:bool):
         if improvement:
-            return ":arrow_lower_right:" if down_is_better else ":arrow_upper_right:"
+            return ":arrow_lower_right:" if low_is_better else ":arrow_upper_right:"
         else: 
-            return ":arrow_upper_right:" if down_is_better else ":arrow_lower_right:"
+            return ":arrow_upper_right:" if low_is_better else ":arrow_lower_right:"
 
     def iter(
         self,

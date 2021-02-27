@@ -14,7 +14,7 @@ from tensorflow.keras import Model
 
 tint = Tint()
 
-tint.scope('Preparing Data')
+tint.printh('Preparing Data')
 
 with tint.status('Processing'):
     mnist = tf.keras.datasets.mnist
@@ -34,7 +34,7 @@ with tint.status('Processing'):
 
     tint.log('Successfully loaded data')
 
-tint.scope('Model Setup')
+tint.printh('Model Setup')
 
 class MyModel(Model):
     def __init__(self):
@@ -91,7 +91,7 @@ def test_step(images, labels):
     test_loss(t_loss)
     test_accuracy(labels, predictions)
 
-tint.scope('Training')
+tint.printh('Training')
 
 EPOCHS = 5
 
