@@ -2,7 +2,7 @@
 
 **Bring color to your machine learning projects!**
 
-![](https://raw.githubusercontent.com/verrannt/tintml/main/assets/tintml-screenshot-3.png)
+![](https://raw.githubusercontent.com/verrannt/tintml/main/assets/example.png)
 
 Tint spices up your machine learning projects by bringing colors to your terminal. Apart from looking awesome, Tint makes it easier to disentangle the information printed by your scripts.
 
@@ -60,6 +60,8 @@ with tint.status('Processing'):
 ### Print Metrics
 
 Tint also allows you to print metrics you obtain during training or testing of your models to the terminal. It even keeps track of their values and shows you if the values have improved or not!
+
+![](https://raw.githubusercontent.com/verrannt/tintml/main/assets/print_metrics.png)
 
 To print metrics, simply call `print_metrics` for each iteration of your training loop, or whenever you want to show your metrics. `print_metrics` accepts three arguments:
 
