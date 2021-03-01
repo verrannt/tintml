@@ -2,7 +2,7 @@
 
 **Bring color to your machine learning projects!**
 
-![](https://raw.githubusercontent.com/verrannt/tintml/main/assets/example.png)
+![](https://raw.githubusercontent.com/verrannt/tintml/main/assets/example-macos.png)
 
 Tint spices up your machine learning projects by bringing colors to your terminal. Apart from looking awesome, Tint makes it easier to disentangle the information printed by your scripts.
 
