@@ -8,14 +8,11 @@ from tintml import Tint
 
 tint = Tint()
 
-n_datapoints = 100
-n_valpoints = 10
-n_epochs = 4
-
-
-## LOAD DATA ##
-
 with tint.status("Initialization"):
+    # Hyperparameters
+    n_datapoints = 100
+    n_valpoints = 10
+    n_epochs = 4
     sleep(0.17)
     tint.log("Read command line arguments")
     sleep(0.12)
@@ -23,6 +20,17 @@ with tint.status("Initialization"):
     sleep(0.28)
     tint.log("Finished initialization")
 
+## LOAD DATA ##
+
+tint.printh('Data Processing')
+
+with tint.status("Processing"):
+    sleep(1.0)
+    tint.log("Read data from files")
+    sleep(0.3)
+    tint.log("Applied train/validation split")
+    sleep(1.4)
+    tint.log("Applied data augmentations")
 
 ## SET UP MODEL ##
 
@@ -48,7 +56,7 @@ for epoch_idx in range(1,n_epochs+1):
     # Train
 
     for i in tint.iter(range(n_datapoints), "Training..."):
-        sleep(0.012)
+        sleep(0.06)
     
     train_error = prev_train_error * 0.9 + np.random.normal(0,0.1)
     prev_train_error = train_error
