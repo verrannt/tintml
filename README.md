@@ -59,6 +59,10 @@ with tint.status('Processing'):
     tint.log('Finished Part 2')
 ```
 
+> See below for an example of how `log`, `printh`, and `status` would look
+
+![](https://raw.githubusercontent.com/verrannt/tintml/main/assets/logging-recording.gif)
+
 ### Print Metrics
 
 Tint also allows you to print metrics you obtain during training or testing of your models to the terminal. It even keeps track of their values and shows you if the values have improved or not!
@@ -99,6 +103,8 @@ Tint also provides a way to track the progress of an iterator as it may be used 
 for i in tint.iter(range(n_datapoints), 'Training...'):
     train_loss = train_step()
 ```
+
+![](https://raw.githubusercontent.com/verrannt/tintml/main/assets/iter-recording.gif)
 
 ## Example
 
