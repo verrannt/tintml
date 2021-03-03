@@ -23,9 +23,11 @@ tint = Tint()
 
 Tint has five main functions that can be easily incorporated into your scripts and allow Tint to render colorful outputs. These are:
 
-### Print
+### Print/PrintH
 
-`print` is to be used like the ordinary Python print statement, and replaces some of the colours used. `printh` prints the text it's provided with in bold yellow, which is useful for headlines when entering a new part of the script. For example, you can use `printh` when processing data, training or testing your model, to differentiate the different parts of the script visually. 
+`print` is to be used like the ordinary Python print statement, and replaces some of the colours used. 
+
+`printh` prints the text it's provided with in bold yellow, which is useful for headlines when entering a new part of the script. For example, you can use `printh` when processing data, training or testing your model, to differentiate the different parts of the script visually. 
 
 ```py
 # Enter the 'Training' part of your script
